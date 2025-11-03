@@ -24,32 +24,13 @@
           }
         }
       },
-      "Bissaye.JwtAuth/1.0.1": {
+      "jose-jwt/5.2.0": {
         "type": "package",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.0"
-        },
         "compile": {
-          "lib/net9.0/Bissaye.JwtAuth.dll": {}
+          "lib/net6.0/jose-jwt.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Bissaye.JwtAuth.dll": {}
-        }
-      },
-      "JWT/11.0.0": {
-        "type": "package",
-        "dependencies": {
-          "Newtonsoft.Json": "13.0.3"
-        },
-        "compile": {
-          "lib/net8.0/JWT.dll": {
-            "related": ".pdb;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/JWT.dll": {
-            "related": ".pdb;.xml"
-          }
+          "lib/net6.0/jose-jwt.dll": {}
         }
       },
       "Microsoft.AspNetCore.Authentication.JwtBearer/9.0.10": {
@@ -471,19 +452,6 @@
           }
         }
       },
-      "Newtonsoft.Json/13.0.3": {
-        "type": "package",
-        "compile": {
-          "lib/net6.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net6.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -607,11 +575,11 @@
           "Microsoft.AspNetCore.App"
         ]
       },
-      "System.IdentityModel.Tokens.Jwt/8.0.1": {
+      "System.IdentityModel.Tokens.Jwt/8.14.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "8.0.1",
-          "Microsoft.IdentityModel.Tokens": "8.0.1"
+          "Microsoft.IdentityModel.JsonWebTokens": "8.14.0",
+          "Microsoft.IdentityModel.Tokens": "8.14.0"
         },
         "compile": {
           "lib/net9.0/System.IdentityModel.Tokens.Jwt.dll": {
@@ -675,49 +643,23 @@
         "lib/netstandard2.0/BCrypt.Net-Core.pdb"
       ]
     },
-    "Bissaye.JwtAuth/1.0.1": {
-      "sha512": "Cza0xZkoqV1KA+oedTsptHtwKOUuqHGOKS+KXnWy9bQtK4DuI6he/IYPQhcIU6UtqRhJeXSQBotGPf5MecJn8Q==",
+    "jose-jwt/5.2.0": {
+      "sha512": "wCpQXj+i7qJpS6QC/dlNJM2AtJ0OGL1hbml/Lo0K5JzN1+HtvUVKCP4f9KvcwE9vLLQdaeSPjuRe+LPDja6xsA==",
       "type": "package",
-      "path": "bissaye.jwtauth/1.0.1",
+      "path": "jose-jwt/5.2.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "bissaye.jwtauth.1.0.1.nupkg.sha512",
-        "bissaye.jwtauth.nuspec",
-        "lib/net9.0/Bissaye.JwtAuth.dll"
-      ]
-    },
-    "JWT/11.0.0": {
-      "sha512": "jOT1PA95jgf78CqWsKt8hz9Uzv4J39vukzf5nYtfky9N6wl1W4vIXT1CdkQI7zG20HnApEMtmpC/pMtCKr4rvw==",
-      "type": "package",
-      "path": "jwt/11.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
+        "LICENSE",
         "README.md",
-        "jwt.11.0.0.nupkg.sha512",
-        "jwt.nuspec",
-        "lib/net35/JWT.dll",
-        "lib/net35/JWT.pdb",
-        "lib/net35/JWT.xml",
-        "lib/net40/JWT.dll",
-        "lib/net40/JWT.pdb",
-        "lib/net40/JWT.xml",
-        "lib/net462/JWT.dll",
-        "lib/net462/JWT.pdb",
-        "lib/net462/JWT.xml",
-        "lib/net6.0/JWT.dll",
-        "lib/net6.0/JWT.pdb",
-        "lib/net6.0/JWT.xml",
-        "lib/net8.0/JWT.dll",
-        "lib/net8.0/JWT.pdb",
-        "lib/net8.0/JWT.xml",
-        "lib/netstandard1.3/JWT.dll",
-        "lib/netstandard1.3/JWT.pdb",
-        "lib/netstandard1.3/JWT.xml",
-        "lib/netstandard2.0/JWT.dll",
-        "lib/netstandard2.0/JWT.pdb",
-        "lib/netstandard2.0/JWT.xml"
+        "jose-jwt.5.2.0.nupkg.sha512",
+        "jose-jwt.nuspec",
+        "lib/net40/jose-jwt.dll",
+        "lib/net461/jose-jwt.dll",
+        "lib/net472/jose-jwt.dll",
+        "lib/net6.0/jose-jwt.dll",
+        "lib/netstandard1.4/jose-jwt.dll",
+        "lib/netstandard2.1/jose-jwt.dll"
       ]
     },
     "Microsoft.AspNetCore.Authentication.JwtBearer/9.0.10": {
@@ -1595,36 +1537,6 @@
         "mysqlconnector.nuspec"
       ]
     },
-    "Newtonsoft.Json/13.0.3": {
-      "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
-      "type": "package",
-      "path": "newtonsoft.json/13.0.3",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.md",
-        "README.md",
-        "lib/net20/Newtonsoft.Json.dll",
-        "lib/net20/Newtonsoft.Json.xml",
-        "lib/net35/Newtonsoft.Json.dll",
-        "lib/net35/Newtonsoft.Json.xml",
-        "lib/net40/Newtonsoft.Json.dll",
-        "lib/net40/Newtonsoft.Json.xml",
-        "lib/net45/Newtonsoft.Json.dll",
-        "lib/net45/Newtonsoft.Json.xml",
-        "lib/net6.0/Newtonsoft.Json.dll",
-        "lib/net6.0/Newtonsoft.Json.xml",
-        "lib/netstandard1.0/Newtonsoft.Json.dll",
-        "lib/netstandard1.0/Newtonsoft.Json.xml",
-        "lib/netstandard1.3/Newtonsoft.Json.dll",
-        "lib/netstandard1.3/Newtonsoft.Json.xml",
-        "lib/netstandard2.0/Newtonsoft.Json.dll",
-        "lib/netstandard2.0/Newtonsoft.Json.xml",
-        "newtonsoft.json.13.0.3.nupkg.sha512",
-        "newtonsoft.json.nuspec",
-        "packageIcon.png"
-      ]
-    },
     "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
       "sha512": "cl7S4s6CbJno0LjNxrBHNc2xxmCliR5i40ATPZk/eTywVaAbHCbdc9vbGc3QThvwGjHqrDHT8vY9m1VF/47o0g==",
       "type": "package",
@@ -1756,13 +1668,14 @@
         "swashbuckle.aspnetcore.swaggerui.nuspec"
       ]
     },
-    "System.IdentityModel.Tokens.Jwt/8.0.1": {
-      "sha512": "GJw3bYkWpOgvN3tJo5X4lYUeIFA2HD293FPUhKmp7qxS+g5ywAb34Dnd3cDAFLkcMohy5XTpoaZ4uAHuw0uSPQ==",
+    "System.IdentityModel.Tokens.Jwt/8.14.0": {
+      "sha512": "EYGgN/S+HK7S6F3GaaPLFAfK0UzMrkXFyWCvXpQWFYmZln3dqtbyIO7VuTM/iIIPMzkelg8ZLlBPvMhxj6nOAA==",
       "type": "package",
-      "path": "system.identitymodel.tokens.jwt/8.0.1",
+      "path": "system.identitymodel.tokens.jwt/8.14.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "README.md",
         "lib/net462/System.IdentityModel.Tokens.Jwt.dll",
         "lib/net462/System.IdentityModel.Tokens.Jwt.xml",
         "lib/net472/System.IdentityModel.Tokens.Jwt.dll",
@@ -1775,7 +1688,7 @@
         "lib/net9.0/System.IdentityModel.Tokens.Jwt.xml",
         "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll",
         "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.xml",
-        "system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512",
+        "system.identitymodel.tokens.jwt.8.14.0.nupkg.sha512",
         "system.identitymodel.tokens.jwt.nuspec"
       ]
     },
@@ -1806,15 +1719,15 @@
     "net9.0": [
       "BCrypt >= 1.0.0",
       "BCrypt.Net-Core >= 1.6.0",
-      "Bissaye.JwtAuth >= 1.0.1",
-      "JWT >= 11.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 9.0.10",
       "Microsoft.AspNetCore.OpenApi >= 9.0.2",
       "Microsoft.IdentityModel.JsonWebTokens >= 8.14.0",
       "Pomelo.EntityFrameworkCore.MySql >= 9.0.0",
       "Swashbuckle.AspNetCore >= 9.0.6",
       "Swashbuckle.AspNetCore.Filters >= 9.0.1",
-      "Swashbuckle.AspNetCore.SwaggerGen >= 9.0.6"
+      "Swashbuckle.AspNetCore.SwaggerGen >= 9.0.6",
+      "System.IdentityModel.Tokens.Jwt >= 8.14.0",
+      "jose-jwt >= 5.2.0"
     ]
   },
   "packageFolders": {
@@ -1868,14 +1781,6 @@
             "target": "Package",
             "version": "[1.6.0, )"
           },
-          "Bissaye.JwtAuth": {
-            "target": "Package",
-            "version": "[1.0.1, )"
-          },
-          "JWT": {
-            "target": "Package",
-            "version": "[11.0.0, )"
-          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[9.0.10, )"
@@ -1903,6 +1808,14 @@
           "Swashbuckle.AspNetCore.SwaggerGen": {
             "target": "Package",
             "version": "[9.0.6, )"
+          },
+          "System.IdentityModel.Tokens.Jwt": {
+            "target": "Package",
+            "version": "[8.14.0, )"
+          },
+          "jose-jwt": {
+            "target": "Package",
+            "version": "[5.2.0, )"
           }
         },
         "imports": [

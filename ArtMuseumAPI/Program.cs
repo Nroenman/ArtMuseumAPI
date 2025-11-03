@@ -1,141 +1,101 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using ArtMuseumAPI.Models;
 using ArtMuseumAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ------------------------------------------------------------
-// 1. Add core services
-// ------------------------------------------------------------
+// --- MVC & DI ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-
-// ------------------------------------------------------------
-// 2. Register application services
-// ------------------------------------------------------------
-builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// ------------------------------------------------------------
-// 3. Database setup (MySQL)
-// ------------------------------------------------------------
+
+// --- DB ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-// ------------------------------------------------------------
-// 4. CORS policy
-// ------------------------------------------------------------
+// --- CORS (allow all) ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowAll", p => p
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
 });
 
-// ------------------------------------------------------------
-// 5. Swagger (with JWT Auth support)
-// ------------------------------------------------------------
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "ArtMuseumAPI",
-        Version = "v1",
-        Description = "API for Art Museum project with JWT authentication"
-    });
+// --- JWT Auth (VALIDATED, matches AuthController) ---
+var signingKeyBytes = Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!);
 
-    // --- Add Bearer Security ---
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "Enter: Bearer {your token}"
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-
-    // Optional: adds [Authorize] annotation support in Swagger UI
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
-
-// ------------------------------------------------------------
-// 6. JWT Authentication
-// ------------------------------------------------------------
-builder.Services.AddAuthentication("Bearer")
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false; // true in production
-        options.SaveToken = true;
-
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)
-            ),
-
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["AppSettings:Audience"],
-
+            ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
 
-            // IMPORTANT: your token uses "roles" and "sub"
-            RoleClaimType = "roles",
-            NameClaimType = "sub"
+            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+            ValidAudience = builder.Configuration["AppSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = JwtRegisteredClaimNames.Sub,
+            ClockSkew = TimeSpan.FromMinutes(2)
         };
     });
 
-// ------------------------------------------------------------
-// 7. Build the app
-// ------------------------------------------------------------
+// --- Swagger ---
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "ArtMuseumAPI", Version = "v1" });
+
+    // Make Swagger UI call the http base directly to avoid redirect issues
+    options.AddServer(new OpenApiServer { Url = "http://localhost:5133" });
+
+    var scheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Paste your JWT (no 'Bearer ' prefix)."
+    };
+    options.AddSecurityDefinition("Bearer", scheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        [ new OpenApiSecurityScheme
+            { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }
+        ] = Array.Empty<string>()
+    });
+});
+
 var app = builder.Build();
 
-// ------------------------------------------------------------
-// 8. Configure middleware pipeline
-// ------------------------------------------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    app.UseSwaggerUI(c =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ArtMuseumAPI v1");
-        options.RoutePrefix = string.Empty; // Swagger at root
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ArtMuseumAPI v1");
+        c.RoutePrefix = string.Empty; // Swagger on /
     });
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+// Keep HTTPS redirect OFF to avoid header loss during redirects in dev
+// app.UseHttpsRedirection();
 
-// ORDER MATTERS:
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 

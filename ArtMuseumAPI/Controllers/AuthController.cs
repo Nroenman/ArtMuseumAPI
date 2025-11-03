@@ -1,53 +1,48 @@
-﻿
-
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ArtMuseumAPI.DTO.User;
 using ArtMuseumAPI.Services;
-using JWT.Algorithms;
-using JWT.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ArtMuseumAPI.Controllers;
 
 [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController(IUserService userService, IConfiguration configuration) : ControllerBase
+[ApiController]
+public class AuthController(IUserService userService, IConfiguration configuration) : ControllerBase
+{
+    [HttpPost("login")]
+    public ActionResult<object> Login([FromBody] AuthInput input)
     {
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<string> Login(AuthInput input)
+        var user = userService.Authenticate(input.Email, input.Password);
+        if (user == null)
+            return Unauthorized(new { Message = "Incorrect email or password." });
+
+        // roles: "Admin,User" etc.
+        var roles = (user.Roles ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        var keyBytes = Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!);
+        var creds = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
         {
-            try
-            {
-                // Authenticate the user
-                var user = userService.Authenticate(input.Email, input.Password);
-                var roles = user.Roles.Split(',');
+            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new("name", user.UserName),
+        };
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-                // Generate JWT token with user ID as string
-                var token = JwtBuilder.Create()
-                    .WithAlgorithm(new HMACSHA256Algorithm()) 
-                    .WithSecret(configuration["AppSettings:Token"]) 
-                    .Subject(user.UserId.ToString())
-                    .Issuer(configuration["AppSettings:Issuer"])
-                    .Audience(configuration["AppSettings:Audience"])
-                    .IssuedAt(DateTimeOffset.Now.DateTime)
-                    .ExpirationTime(DateTimeOffset.Now.AddHours(1).DateTime) 
-                    .NotBefore(DateTimeOffset.Now.DateTime) 
-                    .AddClaim("roles", roles)
+        var jwt = new JwtSecurityToken(
+            issuer:   configuration["AppSettings:Issuer"],
+            audience: configuration["AppSettings:Audience"],
+            claims:   claims,
+            expires:  DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
 
-                    .Id(Guid.NewGuid().ToString()) 
-                    .Encode();
-
-                return Ok(new { Token = token });
-            }
-            catch (ArgumentException ex)
-            {
-                return Unauthorized(new { ex.Message });
-            }
-            catch (Exception ex)
-            {
-                // General exception handling for any unforeseen errors
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request.", Details = ex.Message });
-            }
-        }
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(jwt);
+        return Ok(new { token = tokenString });
     }
+}
