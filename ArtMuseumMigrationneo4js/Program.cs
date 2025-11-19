@@ -38,10 +38,12 @@ internal class Program
 
             Console.WriteLine($"Neo4j URI (debug): {neo4JUri}");
 
-            // --- MySQL connection ---
-            await using var mysql = new MySqlConnection(mysqlConn);
-            await mysql.OpenAsync();
-            Console.WriteLine("MySQL connected.");
+            // --- Test MySQL connection once ---
+            await using (var testConn = new MySqlConnection(mysqlConn))
+            {
+                await testConn.OpenAsync();
+                Console.WriteLine("MySQL connected.");
+            }
 
             // --- Neo4j connection ---
             await using var driver = GraphDatabase.Driver(
@@ -59,28 +61,28 @@ internal class Program
             // 1) Constraints (run once, safe to re-run)
             await CreateConstraints(session);
 
-            // 2) Migrate NODE tables first
-            await MigrateArtists(mysql, session);
-            await MigrateLocations(mysql, session);
-            await MigrateOwners(mysql, session);
-            await MigrateExhibitions(mysql, session);
-            await MigrateCollections(mysql, session);
-            await MigrateArtworks(mysql, session);
-            await MigrateMedia(mysql, session);
-            await MigrateUsers(mysql, session);
-            await MigrateRestorationNodes(mysql, session);
-            await MigrateTransactionNodes(mysql, session);
+            // 2) Migrate NODE tables first (each gets its own MySQL connection)
+            await MigrateArtists(mysqlConn, session);
+            await MigrateLocations(mysqlConn, session);
+            await MigrateOwners(mysqlConn, session);
+            await MigrateExhibitions(mysqlConn, session);
+            await MigrateCollections(mysqlConn, session);
+            await MigrateArtworks(mysqlConn, session);
+            await MigrateMedia(mysqlConn, session);
+            await MigrateUsers(mysqlConn, session);
+            await MigrateRestorationNodes(mysqlConn, session);
+            await MigrateTransactionNodes(mysqlConn, session);
 
             // 3) Then migrate RELATIONSHIPS (FKs + join tables)
-            await LinkArtworksToArtists(mysql, session);
-            await LinkArtworksToLocations(mysql, session);
-            await LinkArtworksToOwners(mysql, session);
-            await MigrateCollectionItemsRels(mysql, session);
-            await MigrateExhibitionArtworksRels(mysql, session);
-            await MigrateMediaRelations(mysql, session);
-            await MigrateOwnershipRels(mysql, session);
-            await LinkRestorations(mysql, session);
-            await LinkTransactions(mysql, session);
+            await LinkArtworksToArtists(mysqlConn, session);
+            await LinkArtworksToLocations(mysqlConn, session);
+            await LinkArtworksToOwners(mysqlConn, session);
+            await MigrateCollectionItemsRels(mysqlConn, session);
+            await MigrateExhibitionArtworksRels(mysqlConn, session);
+            await MigrateMediaRelations(mysqlConn, session);
+            await MigrateOwnershipRels(mysqlConn, session);
+            await LinkRestorations(mysqlConn, session);
+            await LinkTransactions(mysqlConn, session);
 
             Console.WriteLine("Migration complete!");
         }
@@ -118,14 +120,16 @@ internal class Program
         Console.WriteLine("Constraints created.");
     }
 
-
     // =========================
     // Node migrations
     // =========================
 
-    private static async Task MigrateArtists(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateArtists(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT artist_id, full_name, nationality, birth_date, death_date, biography FROM artists";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -137,8 +141,12 @@ internal class Program
         int colDD   = reader.GetOrdinal("death_date");
         int colBio  = reader.GetOrdinal("biography");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int artistId          = reader.GetInt32(colId);
             string fullName       = reader.GetString(colName);
             string? nationality   = reader.IsDBNull(colNat) ? null : reader.GetString(colNat);
@@ -167,12 +175,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Artists migrated.");
+        Console.WriteLine($"Artists migrated: {count}");
     }
 
-    private static async Task MigrateLocations(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateLocations(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT location_id, name, address, room, shelf FROM locations";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -183,8 +194,12 @@ internal class Program
         int colRoom = reader.GetOrdinal("room");
         int colShelf= reader.GetOrdinal("shelf");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int locationId      = reader.GetInt32(colId);
             string name         = reader.GetString(colName);
             string? address     = reader.IsDBNull(colAddr) ? null : reader.GetString(colAddr);
@@ -210,12 +225,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Locations migrated.");
+        Console.WriteLine($"Locations migrated: {count}");
     }
 
-    private static async Task MigrateOwners(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateOwners(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT owner_id, name, owner_type, contact_email, phone, address FROM owners";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -227,8 +245,12 @@ internal class Program
         int colPhone = reader.GetOrdinal("phone");
         int colAddr  = reader.GetOrdinal("address");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int ownerId       = reader.GetInt32(colId);
             string name       = reader.GetString(colName);
             string ownerType  = reader.GetString(colType);
@@ -257,12 +279,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Owners migrated.");
+        Console.WriteLine($"Owners migrated: {count}");
     }
 
-    private static async Task MigrateExhibitions(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateExhibitions(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT exhibition_id, name, start_date, end_date, description FROM exhibitions";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -273,8 +298,12 @@ internal class Program
         int colED   = reader.GetOrdinal("end_date");
         int colDesc = reader.GetOrdinal("description");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int exhibitionId       = reader.GetInt32(colId);
             string name            = reader.GetString(colName);
             DateTime? startDate    = reader.IsDBNull(colSD)   ? (DateTime?)null : reader.GetDateTime(colSD);
@@ -300,12 +329,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Exhibitions migrated.");
+        Console.WriteLine($"Exhibitions migrated: {count}");
     }
 
-    private static async Task MigrateCollections(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateCollections(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT collection_id, name, description FROM collections";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -314,8 +346,12 @@ internal class Program
         int colName = reader.GetOrdinal("name");
         int colDesc = reader.GetOrdinal("description");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int collectionId     = reader.GetInt32(colId);
             string name          = reader.GetString(colName);
             string? description  = reader.IsDBNull(colDesc) ? null : reader.GetString(colDesc);
@@ -335,15 +371,18 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Collections migrated.");
+        Console.WriteLine($"Collections migrated: {count}");
     }
 
-    private static async Task MigrateArtworks(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateArtworks(string connStr, IAsyncSession session)
     {
         const string sql = @"
             SELECT artwork_id, title, medium, year_created, dimensions,
                    notes, trigger_generated_note, created_at
             FROM artworks";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -357,8 +396,12 @@ internal class Program
         int colTrig  = reader.GetOrdinal("trigger_generated_note");
         int colCreated = reader.GetOrdinal("created_at");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int artworkId       = reader.GetInt32(colId);
             string title        = reader.GetString(colTitle);
             string? medium      = reader.IsDBNull(colMed)   ? null : reader.GetString(colMed);
@@ -393,14 +436,17 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Artworks migrated.");
+        Console.WriteLine($"Artworks migrated: {count}");
     }
 
-    private static async Task MigrateMedia(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateMedia(string connStr, IAsyncSession session)
     {
         const string sql = @"
             SELECT media_id, media_type, title, file_url, captured_date, copyright_holder, notes
             FROM media_files";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -413,8 +459,12 @@ internal class Program
         int colCopy = reader.GetOrdinal("copyright_holder");
         int colNotes= reader.GetOrdinal("notes");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int mediaId        = reader.GetInt32(colId);
             string mediaType   = reader.GetString(colType);
             string? title      = reader.IsDBNull(colTitle) ? null : reader.GetString(colTitle);
@@ -446,12 +496,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Media files migrated.");
+        Console.WriteLine($"Media files migrated: {count}");
     }
 
-    private static async Task MigrateUsers(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateUsers(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT UserId, UserName, Email, CreatedAt, UpdatedAt, Roles FROM users";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -463,8 +516,12 @@ internal class Program
         int colUpdated = reader.GetOrdinal("UpdatedAt");
         int colRoles = reader.GetOrdinal("Roles");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int userId        = reader.GetInt32(colId);
             string userName   = reader.GetString(colName);
             string email      = reader.GetString(colEmail);
@@ -493,15 +550,18 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Users migrated.");
+        Console.WriteLine($"Users migrated: {count}");
     }
 
-    private static async Task MigrateRestorationNodes(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateRestorationNodes(string connStr, IAsyncSession session)
     {
         const string sql = @"
             SELECT restoration_id, restoration_date, conservator, restoration_type,
                    details, condition_before, condition_after, cost, currency
             FROM restorations";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -516,8 +576,12 @@ internal class Program
         int colCost   = reader.GetOrdinal("cost");
         int colCurr   = reader.GetOrdinal("currency");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int restorationId        = reader.GetInt32(colId);
             DateTime? restorationDate= reader.IsDBNull(colDate) ? (DateTime?)null : reader.GetDateTime(colDate);
             string? conservator      = reader.IsDBNull(colCons) ? null : reader.GetString(colCons);
@@ -555,15 +619,18 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Restoration nodes migrated.");
+        Console.WriteLine($"Restoration nodes migrated: {count}");
     }
 
-    private static async Task MigrateTransactionNodes(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateTransactionNodes(string connStr, IAsyncSession session)
     {
         const string sql = @"
             SELECT transaction_id, artwork_id, txn_date, txn_type,
                    price, currency, notes
             FROM transactions";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -575,8 +642,12 @@ internal class Program
         int colCurr = reader.GetOrdinal("currency");
         int colNotes= reader.GetOrdinal("notes");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int transactionId       = reader.GetInt32(colId);
             DateTime txnDate        = reader.GetDateTime(colDate);
             string txnType          = reader.GetString(colType);
@@ -605,16 +676,19 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Transaction nodes migrated.");
+        Console.WriteLine($"Transaction nodes migrated: {count}");
     }
 
     // =========================
     // Relationship migrations
     // =========================
 
-    private static async Task LinkArtworksToArtists(MySqlConnection mysql, IAsyncSession session)
+    private static async Task LinkArtworksToArtists(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT artwork_id, primary_artist_id FROM artworks WHERE primary_artist_id IS NOT NULL";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -622,8 +696,12 @@ internal class Program
         int colArtwork = reader.GetOrdinal("artwork_id");
         int colArtist  = reader.GetOrdinal("primary_artist_id");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int artworkId = reader.GetInt32(colArtwork);
             int artistId  = reader.GetInt32(colArtist);
 
@@ -637,12 +715,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Artwork–Artist relationships created.");
+        Console.WriteLine($"Artwork–Artist relationships created: {count}");
     }
 
-    private static async Task LinkArtworksToLocations(MySqlConnection mysql, IAsyncSession session)
+    private static async Task LinkArtworksToLocations(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT artwork_id, current_location_id FROM artworks WHERE current_location_id IS NOT NULL";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -650,8 +731,12 @@ internal class Program
         int colArtwork = reader.GetOrdinal("artwork_id");
         int colLoc     = reader.GetOrdinal("current_location_id");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int artworkId  = reader.GetInt32(colArtwork);
             int locationId = reader.GetInt32(colLoc);
 
@@ -665,12 +750,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Artwork–Location relationships created.");
+        Console.WriteLine($"Artwork–Location relationships created: {count}");
     }
 
-    private static async Task LinkArtworksToOwners(MySqlConnection mysql, IAsyncSession session)
+    private static async Task LinkArtworksToOwners(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT artwork_id, current_owner_id FROM artworks WHERE current_owner_id IS NOT NULL";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -678,8 +766,12 @@ internal class Program
         int colArtwork = reader.GetOrdinal("artwork_id");
         int colOwner   = reader.GetOrdinal("current_owner_id");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int artworkId = reader.GetInt32(colArtwork);
             int ownerId   = reader.GetInt32(colOwner);
 
@@ -693,12 +785,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Artwork–Owner relationships created.");
+        Console.WriteLine($"Artwork–Owner relationships created: {count}");
     }
 
-    private static async Task MigrateCollectionItemsRels(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateCollectionItemsRels(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT collection_id, artwork_id, date_added, item_notes FROM collection_items";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -708,8 +803,12 @@ internal class Program
         int colDate  = reader.GetOrdinal("date_added");
         int colNotes = reader.GetOrdinal("item_notes");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int collectionId    = reader.GetInt32(colColl);
             int artworkId       = reader.GetInt32(colArt);
             DateTime? dateAdded = reader.IsDBNull(colDate) ? (DateTime?)null : reader.GetDateTime(colDate);
@@ -733,12 +832,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Collection–Artwork relationships created.");
+        Console.WriteLine($"Collection–Artwork relationships created: {count}");
     }
 
-    private static async Task MigrateExhibitionArtworksRels(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateExhibitionArtworksRels(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT exhibition_id, artwork_id, display_label, notes FROM exhibition_artworks";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -748,8 +850,12 @@ internal class Program
         int colLabel = reader.GetOrdinal("display_label");
         int colNotes = reader.GetOrdinal("notes");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int exhibitionId = reader.GetInt32(colExh);
             int artworkId    = reader.GetInt32(colArt);
             string? label    = reader.IsDBNull(colLabel) ? null : reader.GetString(colLabel);
@@ -773,13 +879,16 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Exhibition–Artwork relationships created.");
+        Console.WriteLine($"Exhibition–Artwork relationships created: {count}");
     }
 
-    private static async Task MigrateMediaRelations(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateMediaRelations(string connStr, IAsyncSession session)
     {
         // artwork_id + artist_id are optional
         const string sql = @"SELECT media_id, artwork_id, artist_id FROM media_files";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -788,12 +897,16 @@ internal class Program
         int colArt   = reader.GetOrdinal("artwork_id");
         int colArtist= reader.GetOrdinal("artist_id");
 
+        int countArt = 0;
+        int countArtist = 0;
+
         while (await reader.ReadAsync())
         {
             int mediaId = reader.GetInt32(colMedia);
 
             if (!reader.IsDBNull(colArt))
             {
+                countArt++;
                 int artworkId = reader.GetInt32(colArt);
                 var pArtwork = new { mediaId, artworkId };
 
@@ -807,6 +920,7 @@ internal class Program
 
             if (!reader.IsDBNull(colArtist))
             {
+                countArtist++;
                 int artistId = reader.GetInt32(colArtist);
                 var pArtist = new { mediaId, artistId };
 
@@ -819,15 +933,18 @@ internal class Program
             }
         }
 
-        Console.WriteLine("Media relationships created.");
+        Console.WriteLine($"Media relationships created: HAS_MEDIA={countArt}, FEATURED_IN_MEDIA={countArtist}");
     }
 
-    private static async Task MigrateOwnershipRels(MySqlConnection mysql, IAsyncSession session)
+    private static async Task MigrateOwnershipRels(string connStr, IAsyncSession session)
     {
         const string sql = @"
             SELECT ownership_id, artwork_id, owner_id,
                    acquired_date, relinquished_date, source_document, notes
             FROM ownership";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -840,8 +957,12 @@ internal class Program
         int colSrc  = reader.GetOrdinal("source_document");
         int colNotes= reader.GetOrdinal("notes");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int ownershipId       = reader.GetInt32(colOwn);
             int artworkId         = reader.GetInt32(colArt);
             int ownerId           = reader.GetInt32(colOwner);
@@ -873,12 +994,15 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Ownership relationships created.");
+        Console.WriteLine($"Ownership relationships created: {count}");
     }
 
-    private static async Task LinkRestorations(MySqlConnection mysql, IAsyncSession session)
+    private static async Task LinkRestorations(string connStr, IAsyncSession session)
     {
         const string sql = @"SELECT restoration_id, artwork_id FROM restorations";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -886,8 +1010,12 @@ internal class Program
         int colRest = reader.GetOrdinal("restoration_id");
         int colArt  = reader.GetOrdinal("artwork_id");
 
+        int count = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int restorationId = reader.GetInt32(colRest);
             int artworkId     = reader.GetInt32(colArt);
 
@@ -901,15 +1029,18 @@ internal class Program
             await session.RunAsync(cypher, parameters);
         }
 
-        Console.WriteLine("Restoration relationships created.");
+        Console.WriteLine($"Restoration relationships created: {count}");
     }
 
-    private static async Task LinkTransactions(MySqlConnection mysql, IAsyncSession session)
+    private static async Task LinkTransactions(string connStr, IAsyncSession session)
     {
         // link Transaction nodes to Artwork + Owners
         const string sql = @"
             SELECT transaction_id, artwork_id, from_owner_id, to_owner_id
             FROM transactions";
+
+        await using var mysql = new MySqlConnection(connStr);
+        await mysql.OpenAsync();
 
         await using var cmd = new MySqlCommand(sql, mysql);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -919,8 +1050,14 @@ internal class Program
         int colFrom  = reader.GetOrdinal("from_owner_id");
         int colTo    = reader.GetOrdinal("to_owner_id");
 
+        int count = 0;
+        int countFrom = 0;
+        int countTo = 0;
+
         while (await reader.ReadAsync())
         {
+            count++;
+
             int transactionId = reader.GetInt32(colId);
             int artworkId     = reader.GetInt32(colArt);
 
@@ -937,6 +1074,7 @@ internal class Program
             // optional from_owner
             if (!reader.IsDBNull(colFrom))
             {
+                countFrom++;
                 int fromOwnerId = reader.GetInt32(colFrom);
                 var pFrom = new { transactionId, fromOwnerId };
 
@@ -951,6 +1089,7 @@ internal class Program
             // optional to_owner
             if (!reader.IsDBNull(colTo))
             {
+                countTo++;
                 int toOwnerId = reader.GetInt32(colTo);
                 var pTo = new { transactionId, toOwnerId };
 
@@ -963,6 +1102,6 @@ internal class Program
             }
         }
 
-        Console.WriteLine("Transaction relationships created.");
+        Console.WriteLine($"Transaction relationships created: FOR_ARTWORK={count}, FROM_OWNER={countFrom}, TO_OWNER={countTo}");
     }
 }
