@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ArtMuseumAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+933c63d1c941da167dd55ba29912b5ee91994726")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+103306dacb761d48a358c3b5935e8c3bef0287d2")]
 [assembly: System.Reflection.AssemblyProductAttribute("ArtMuseumAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ArtMuseumAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
