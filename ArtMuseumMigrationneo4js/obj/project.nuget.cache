@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4KEK4ILQJb0=",
+  "dgSpecHash": "m3WF8hW1PEU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kader\\Desktop\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
+  "projectFilePath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kader\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\kader\\.nuget\\packages\\google.protobuf\\3.32.0\\google.protobuf.3.32.0.nupkg.sha512",

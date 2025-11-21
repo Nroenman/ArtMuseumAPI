@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ArtMuseumMigrationneo4js")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3c8150627f528ea49f4816dd89f6106b02eedf90")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce422c566a3c40a9ecc15f771a50d85c5340e81b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ArtMuseumMigrationneo4js")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ArtMuseumMigrationneo4js")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

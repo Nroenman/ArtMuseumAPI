@@ -8331,11 +8331,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kader\\Desktop\\Database\\KunstMuseumMigrator\\MysqlMongodbMigrator\\MysqlMongodbMigrator.csproj",
+      "projectUniqueName": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\MysqlMongodbMigrator\\MysqlMongodbMigrator.csproj",
       "projectName": "MysqlMongodbMigrator",
-      "projectPath": "C:\\Users\\kader\\Desktop\\Database\\KunstMuseumMigrator\\MysqlMongodbMigrator\\MysqlMongodbMigrator.csproj",
+      "projectPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\MysqlMongodbMigrator\\MysqlMongodbMigrator.csproj",
       "packagesPath": "C:\\Users\\kader\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kader\\Desktop\\Database\\KunstMuseumMigrator\\MysqlMongodbMigrator\\obj\\",
+      "outputPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\MysqlMongodbMigrator\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

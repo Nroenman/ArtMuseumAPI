@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtMuseumAPI", "ArtMuseumAP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtMuseumMigrationneo4js", "ArtMuseumMigrationneo4js\ArtMuseumMigrationneo4js.csproj", "{670B8262-7A58-4906-B4F6-4B98053A1BD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MysqlMongodbMigrator", "MysqlMongodbMigrator\MysqlMongodbMigrator.csproj", "{2AC1D56C-9182-410E-96FB-F42EE01705A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
