@@ -60,5 +60,15 @@ coverage/
 Thumbs.db
 Desktop.ini
 
-# macOS
-.DS_Store
+# Ignore compiled binaries
+*.dll
+*.exe
+
+*.mdb
+*.appx
+*.apphost.exe
+
+# Ignore Rider + Visual Studio outputs
+*.nuget.info
+*.nuget.cache
+*.sourcelink.json
