@@ -34,6 +34,7 @@ namespace MysqlMongodbMigrator.Data
             entity.Property(e => e.PrimaryArtistID).HasColumnName("primary_artist_id");
             entity.Property(e => e.CurrentLocationID).HasColumnName("current_location_id");
             entity.Property(e => e.CurrentOwnerID).HasColumnName("current_owner_id");
+            entity.Property(e => e.Notes).HasColumnName("notes");
 
             entity.HasOne(e => e.PrimaryArtist)
                 .WithMany()
@@ -165,6 +166,7 @@ namespace MysqlMongodbMigrator.Data
             entity.Property(e => e.ArtworkID).HasColumnName("artwork_id");
             entity.Property(e => e.RestorationDate).HasColumnName("restoration_date");
             entity.Property(e => e.Conservator).HasColumnName("conservator");
+            entity.Property(e => e.RestorationType).HasColumnName("restoration_type");
             entity.Property(e => e.Details).HasColumnName("details");
             entity.Property(e => e.ConditionBefore).HasColumnName("condition_before");
             entity.Property(e => e.ConditionAfter).HasColumnName("condition_after");

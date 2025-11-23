@@ -17,5 +17,6 @@ namespace MysqlMongodbMigrator.Models
         public Locations? CurrentLocation { get; set; }
         public int CurrentOwnerID { get; set; }
         public Owners? CurrentOwner { get; set; }
+        public string? Notes { get; set; }
     }
 }

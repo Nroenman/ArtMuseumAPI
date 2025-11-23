@@ -68,11 +68,14 @@ namespace MysqlMongodbMigrator.Services
                 artworksDocs.Add(new ArtworksDocument
                 {
                     ArtworkID = artwork.ArtworkID,
-                    ArtistID = artwork.PrimaryArtistID,
                     Title = artwork.Title,
-                    YearCreated = artwork.YearCreated,
                     Medium = artwork.Medium,
-                    Dimensions = artwork.Dimensions
+                    YearCreated = artwork.YearCreated,
+                    Dimensions = artwork.Dimensions,
+                    PrimaryArtistID = artwork.PrimaryArtistID,
+                    CurrentLocationID = artwork.CurrentLocationID,
+                    CurrentOwnerID = artwork.CurrentOwnerID,
+                    Notes = artwork.Notes,
                 });
             }
 
@@ -259,6 +262,7 @@ namespace MysqlMongodbMigrator.Services
                     ArtworkID = restoration.ArtworkID,
                     RestorationDate = restoration.RestorationDate,
                     Conservator = restoration.Conservator,
+                    RestorationType = restoration.RestorationType,
                     Details = restoration.Details,
                     ConditionBefore = restoration.ConditionBefore,
                     ConditionAfter = restoration.ConditionAfter,
