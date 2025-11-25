@@ -73,3 +73,5 @@ Desktop.ini
 *.nuget.info
 *.nuget.cache
 *.sourcelink.json
+
+*.vsidx
