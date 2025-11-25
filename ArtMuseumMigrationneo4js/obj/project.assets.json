@@ -1238,23 +1238,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kader\\.nuget\\packages\\": {},
+    "C:\\Users\\dehli\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
+      "projectUniqueName": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
       "projectName": "ArtMuseumMigrationneo4js",
-      "projectPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
-      "packagesPath": "C:\\Users\\kader\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\obj\\",
+      "projectPath": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
+      "packagesPath": "C:\\Users\\dehli\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\kader\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\dehli\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1263,7 +1263,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1325,7 +1324,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseumapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|solutionrelative:artmuseumapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseumapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|solutionrelative:artmuseumapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{670B8262-7A58-4906-B4F6-4B98053A1BD7}|ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseummigrationneo4js\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{670B8262-7A58-4906-B4F6-4B98053A1BD7}|ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj|solutionrelative:artmuseummigrationneo4js\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseumapi\\controllers\\collectionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|solutionrelative:artmuseumapi\\controllers\\collectionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseumapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|solutionrelative:artmuseumapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2AC1D56C-9182-410E-96FB-F42EE01705A2}|ArtMuseumAPI\\ArtMuseumAPI.csproj|c:\\users\\dehli\\documents\\github\\artmuseumapi\\artmuseumapi\\models\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,11 +46,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "ArtMuseumAPI\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Properties\\launchSettings.json*",
+              "RelativeToolTip": "ArtMuseumAPI\\Properties\\launchSettings.json*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-25T10:53:10.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\appsettings.json",
+              "RelativeDocumentMoniker": "ArtMuseumMigrationneo4js\\appsettings.json",
+              "ToolTip": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\appsettings.json",
+              "RelativeToolTip": "ArtMuseumMigrationneo4js\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-25T10:53:06.531Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Collection.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Models\\Collection.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Models\\Collection.cs",
@@ -50,12 +84,11 @@
               "RelativeToolTip": "ArtMuseumAPI\\Models\\Collection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T12:06:50.287Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T12:06:50.287Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Models\\User.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Models\\User.cs",
@@ -63,12 +96,11 @@
               "RelativeToolTip": "ArtMuseumAPI\\Models\\User.cs",
               "ViewState": "AgIAAAwAAAAAAAAAAAAAABkAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T12:02:48.017Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T12:02:48.017Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Models\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Models\\ApplicationDbContext.cs",
@@ -76,12 +108,11 @@
               "RelativeToolTip": "ArtMuseumAPI\\Models\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T12:00:18.809Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T12:00:18.809Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Controllers\\AuthController.cs",
@@ -89,12 +120,11 @@
               "RelativeToolTip": "ArtMuseumAPI\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAABEAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T11:37:27.698Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T11:37:27.698Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Controllers\\UserController.cs",
@@ -102,31 +132,30 @@
               "RelativeToolTip": "ArtMuseumAPI\\Controllers\\UserController.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAA1wBUAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-19T09:22:00.683Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T09:22:00.683Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CollectionsController.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Controllers\\CollectionsController.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Controllers\\CollectionsController.cs",
               "ToolTip": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Controllers\\CollectionsController.cs",
               "RelativeToolTip": "ArtMuseumAPI\\Controllers\\CollectionsController.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAQwBcAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAADwvyQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-19T11:33:49.914Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Program.cs",
               "RelativeDocumentMoniker": "ArtMuseumAPI\\Program.cs",
               "ToolTip": "C:\\Users\\dehli\\Documents\\GitHub\\ArtMuseumAPI\\ArtMuseumAPI\\Program.cs",
               "RelativeToolTip": "ArtMuseumAPI\\Program.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAcwBYAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAE4AAAAAAAAAAADwv3UAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-19T09:20:54.921Z",
               "EditorCaption": ""

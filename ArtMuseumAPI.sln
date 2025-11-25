@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtMuseumAPI", "ArtMuseumAPI\ArtMuseumAPI.csproj", "{2AC1D56C-9182-410E-96FB-F42EE01705A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtMuseumMigrationneo4js", "ArtMuseumMigrationneo4js\ArtMuseumMigrationneo4js.csproj", "{670B8262-7A58-4906-B4F6-4B98053A1BD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MysqlMongodbMigrator", "MysqlMongodbMigrator\MysqlMongodbMigrator.csproj", "{2AC1D56C-9182-410E-96FB-F42EE01705A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MysqlMongodbMigrator", "MysqlMongodbMigrator\MysqlMongodbMigrator.csproj", "{F9D105E7-23A5-4762-86F7-E8838BBEBAED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,5 +23,12 @@ Global
 		{670B8262-7A58-4906-B4F6-4B98053A1BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{670B8262-7A58-4906-B4F6-4B98053A1BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{670B8262-7A58-4906-B4F6-4B98053A1BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D105E7-23A5-4762-86F7-E8838BBEBAED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D105E7-23A5-4762-86F7-E8838BBEBAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D105E7-23A5-4762-86F7-E8838BBEBAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D105E7-23A5-4762-86F7-E8838BBEBAED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

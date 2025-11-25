@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace ArtMuseumAPI.Controllers
+namespace ArtMuseumAPI.Controllers.Mysql
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class CollectionsController : Controller
+    [Route("api/mysql/[controller]")]
+    [ApiExplorerSettings(GroupName = "MySql")]
+    public class CollectionsController : ControllerBase
     {
 
         private readonly ApplicationDbContext _db;
@@ -18,23 +19,39 @@ namespace ArtMuseumAPI.Controllers
             _db = db;
         }
 
-        // GET: api/Users (Admin only) — adjust/remove Roles if not present
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<IEnumerable<object>>> DeleteController(int id)
         {
-            // Optional: you can first check if it exists
+
             var exists = await _db.Collections.AnyAsync(c => c.CollectionId == id);
             if (!exists)
                 return NotFound();
-            
-            // Call your stored procedure
+
             await _db.Database.ExecuteSqlRawAsync("CALL delete_collection({0})", id);
 
-            // or if your MySQL provider prefers INTERPOLATED:
-            // await _db.Database.ExecuteSqlInterpolatedAsync($"CALL delete_collection({id})");
 
             return NoContent();
+        }
+
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetCollectionId(int id)
+        {
+            var collection = await _db.Collections
+                .Where(c => c.CollectionId == id)
+                .Select(c => new
+                {
+                    c.CollectionId,
+                    c.OwnerId,
+                    c.Name,
+                    c.Description
+
+                })
+                .FirstOrDefaultAsync();
+
+            return collection is null ? NotFound() : Ok(collection);
         }
     }
 }
