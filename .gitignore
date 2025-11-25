@@ -2,3 +2,8 @@ ArtMuseumAPI/bin/Debug/net9.0/ArtMuseumAPI.exe
 ArtMuseumAPI/bin/Debug/net9.0/ArtMuseumAPI.dll
 ArtMuseumAPI/bin/Debug/net9.0/ArtMuseumAPI.pdb
 .vs/ArtMuseumAPI/FileContentIndex/63bd89b2-6b81-4379-829f-2ed44e419880.vsidx
+*.editorconfig
+*.info
+*.cache
+*.cache
+*.cs
