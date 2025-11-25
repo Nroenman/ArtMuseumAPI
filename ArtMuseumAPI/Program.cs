@@ -57,9 +57,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // --- Swagger ---
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "ArtMuseumAPI", Version = "v1" });
 
-    // Make Swagger UI call the http base directly to avoid redirect issues
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ArtMuseumAPI",
+        Version = "v1"
+    });
+
+    options.TagActionsBy(api =>
+    {
+        return new[]
+        {
+        api.GroupName ?? api.ActionDescriptor.RouteValues["controller"]!
+    };
+    });
+
+    options.DocInclusionPredicate((docName, apiDesc) => true);
     options.AddServer(new OpenApiServer { Url = "http://localhost:5133" });
 
     var scheme = new OpenApiSecurityScheme
@@ -74,11 +87,13 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("Bearer", scheme);
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        [ new OpenApiSecurityScheme
-            { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }
+        [new OpenApiSecurityScheme
+        { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }
         ] = Array.Empty<string>()
     });
 });
+
+
 
 var app = builder.Build();
 
@@ -88,12 +103,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ArtMuseumAPI v1");
-        c.RoutePrefix = string.Empty; // Swagger on /
+        c.RoutePrefix = string.Empty;
     });
 }
 
-// Keep HTTPS redirect OFF to avoid header loss during redirects in dev
-// app.UseHttpsRedirection();
+
 
 app.UseCors("AllowAll");
 app.UseAuthentication();
