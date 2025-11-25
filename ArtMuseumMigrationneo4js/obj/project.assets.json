@@ -1238,32 +1238,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kader\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\nikol\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
+      "projectUniqueName": "C:\\Users\\nikol\\RiderProjects\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
       "projectName": "ArtMuseumMigrationneo4js",
-      "projectPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
-      "packagesPath": "C:\\Users\\kader\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kader\\Desktop\\Database\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\obj\\",
+      "projectPath": "C:\\Users\\nikol\\RiderProjects\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\ArtMuseumMigrationneo4js.csproj",
+      "packagesPath": "C:\\Users\\nikol\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nikol\\RiderProjects\\ArtMuseumAPI\\ArtMuseumMigrationneo4js\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\kader\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\nikol\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1282,7 +1274,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net9.0": {
@@ -1325,7 +1317,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\nikol\\.dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
