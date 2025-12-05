@@ -3,9 +3,8 @@ using ArtMuseumAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace ArtMuseumAPI.Controllers.Mysql
+namespace ArtMuseumAPI.Controllers
 {
     [ApiController]
     [Route("api/mysql/[controller]")]
