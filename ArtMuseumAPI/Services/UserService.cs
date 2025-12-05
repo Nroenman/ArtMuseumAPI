@@ -1,53 +1,128 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using ArtMuseumAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using Neo4j.Driver;
 
-namespace ArtMuseumAPI.Services;
-
-public class UserService(ApplicationDbContext context, IConfiguration configuration) : IUserService
+namespace ArtMuseumAPI.Services
 {
-    private readonly ApplicationDbContext _context = context;
-    private readonly IConfiguration _configuration = configuration;
-
-    public User Authenticate(string email, string password)
+    public class UserService(ApplicationDbContext db, IDriver neo4J) : IUserService
     {
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        // Used by AuthController for login
+        public User? Authenticate(string email, string password)
         {
-            return null; //return null hvis email/kode er forkert
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return null;
+
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+
+            // 1) Try MySQL first
+            var sqlUser = db.Users
+                .AsNoTracking()
+                .SingleOrDefault(u => u.Email == normalizedEmail);
+
+            if (sqlUser != null && BCrypt.Net.BCrypt.Verify(password, sqlUser.PasswordHash))
+            {
+                return sqlUser; // has Roles from MySQL
+            }
+
+            // 2) Fallback to Neo4j
+            using var session = neo4J.AsyncSession(); // ✅ AsyncSession, not Session
+
+            var cursor = session
+                .RunAsync(
+                    @"MATCH (u:User { email: $email })
+                      RETURN
+                          u.userId       AS UserId,
+                          u.userName     AS UserName,
+                          u.email        AS Email,
+                          u.passwordHash AS PasswordHash,
+                          u.roles        AS Roles",
+                    new { email = normalizedEmail })
+                .GetAwaiter().GetResult();
+
+            var list = cursor.ToListAsync().GetAwaiter().GetResult();
+            var record = list.SingleOrDefault();
+
+            if (record == null)
+                return null;
+
+            var passwordHash = record["PasswordHash"].As<string>();
+            if (!BCrypt.Net.BCrypt.Verify(password, passwordHash))
+                return null;
+
+            var roles = record["Roles"].As<string?>();
+            var userId = record["UserId"].As<int>();
+
+            // Map Neo4j result into a User entity so AuthController can use it
+            var neoUser = new User
+            {
+                UserId       = userId,
+                UserName     = record["UserName"].As<string>(),
+                Email        = record["Email"].As<string>(),
+                PasswordHash = passwordHash,
+                Roles        = roles ?? string.Empty,
+                // CreatedAt/UpdatedAt not strictly needed for auth
+            };
+
+            return neoUser;
         }
 
-        return new User
+        // Interface member from IUserService
+        // Your tests expect this to THROW UnauthorizedAccessException on bad token.
+        public User GetUserFromJwtToken(string token)
         {
-            UserName = user.UserName,
-            Email = user.Email,
-            Roles = user.Roles,
-            CreatedAt = user.CreatedAt,
-            UpdatedAt = user.UpdatedAt
-        };
-    }
+            if (string.IsNullOrWhiteSpace(token))
+                throw new UnauthorizedAccessException("Missing token");
 
-    public User GetUserFromJwtToken(string token)
-    {
-        var jwtHandler = new JwtSecurityTokenHandler();
-        var jwtToken = jwtHandler.ReadToken(token) as JwtSecurityToken
-                       ?? throw new UnauthorizedAccessException("Invalid token");
+            JwtSecurityToken jwt;
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                jwt = handler.ReadJwtToken(token);
+            }
+            catch
+            {
+                throw new UnauthorizedAccessException("Invalid token");
+            }
 
-        var sub = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value
-                  ?? throw new UnauthorizedAccessException("Invalid token");
+            var sub = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (!int.TryParse(sub, out var userId))
+                throw new UnauthorizedAccessException("Invalid token");
 
-        if (!int.TryParse(sub, out var userId))
-            throw new UnauthorizedAccessException("Invalid subject claim");
+            // 1) Try MySQL
+            var sqlUser = db.Users.AsNoTracking().SingleOrDefault(u => u.UserId == userId);
+            if (sqlUser != null)
+                return sqlUser;
 
-        var user = _context.Users.FirstOrDefault(u => u.UserId == userId)
-                   ?? throw new UnauthorizedAccessException("User not found");
+            // 2) Fallback to Neo4j
+            using var session = neo4J.AsyncSession();
 
-        return new User
-        {
-            UserName = user.UserName,
-            Email = user.Email,
-            Roles = user.Roles,
-            CreatedAt = user.CreatedAt,
-            UpdatedAt = user.UpdatedAt
-        };
+            var cursor = session
+                .RunAsync(
+                    @"MATCH (u:User { userId: $uid })
+                      RETURN
+                          u.userId       AS UserId,
+                          u.userName     AS UserName,
+                          u.email        AS Email,
+                          u.passwordHash AS PasswordHash,
+                          u.roles        AS Roles",
+                    new { uid = userId })
+                .GetAwaiter().GetResult();
+
+            var list = cursor.ToListAsync().GetAwaiter().GetResult();
+            var record = list.SingleOrDefault();
+
+            if (record == null)
+                throw new UnauthorizedAccessException("User not found for token");
+
+            return new User
+            {
+                UserId       = record["UserId"].As<int>(),
+                UserName     = record["UserName"].As<string>(),
+                Email        = record["Email"].As<string>(),
+                PasswordHash = record["PasswordHash"].As<string>(),
+                Roles        = record["Roles"].As<string?>() ?? ""
+            };
+        }
     }
 }

@@ -4,6 +4,6 @@ namespace ArtMuseumAPI.Services;
 
 public interface IUserService
 {
-    User Authenticate(string email, string password); 
-    User GetUserFromJwtToken(string token); 
+    User? Authenticate(string email, string password);  
+    User GetUserFromJwtToken(string token);             
 }

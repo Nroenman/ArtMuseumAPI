@@ -5,7 +5,7 @@ namespace ArtMuseumAPI.Models;
 public class User
 {
     // EF can set this when inserting a row
-    public int UserId { get; private set; }
+    public int UserId { get; set; }
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
 

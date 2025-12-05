@@ -2,11 +2,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ArtMuseumAPI.Models;
+using ArtMuseumAPI.Models.Mongo;
+using ArtMuseumAPI.Models.Neo4j;
 using ArtMuseumAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using Neo4j.Driver;
+using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +23,33 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
 
-
-// --- DB ---
+// --- DB: MySQL ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
+
+
+// === NEW: MongoDB DI ===
+builder.Services.Configure<MongoSettings>(
+    builder.Configuration.GetSection("MongoSettings"));
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
+
+
+// === NEW: Neo4j DI ===
+builder.Services.Configure<Neo4JSettings>(
+    builder.Configuration.GetSection("Neo4jSettings"));
+
+builder.Services.AddSingleton<IDriver>(sp =>
+{
+    var cfg = sp.GetRequiredService<IOptions<Neo4JSettings>>().Value;
+    return GraphDatabase.Driver(cfg.Uri, AuthTokens.Basic(cfg.User, cfg.Password));
+});
+
 
 // --- CORS (allow all) ---
 builder.Services.AddCors(options =>
@@ -57,7 +86,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // --- Swagger ---
 builder.Services.AddSwaggerGen(options =>
 {
-
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "ArtMuseumAPI",
@@ -68,8 +96,8 @@ builder.Services.AddSwaggerGen(options =>
     {
         return new[]
         {
-        api.GroupName ?? api.ActionDescriptor.RouteValues["controller"]!
-    };
+            api.GroupName ?? api.ActionDescriptor.RouteValues["controller"]!
+        };
     });
 
     options.DocInclusionPredicate((docName, apiDesc) => true);
@@ -93,8 +121,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -106,8 +132,6 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty;
     });
 }
-
-
 
 app.UseCors("AllowAll");
 app.UseAuthentication();
