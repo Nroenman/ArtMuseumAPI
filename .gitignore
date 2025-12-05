@@ -15,3 +15,6 @@ ArtMuseumAPI/bin/Debug/net9.0/ArtMuseumAPI.pdb
 .vs/ArtMuseumAPI/CopilotIndices/17.14.1518.61961/SemanticSymbols.db
 .vs/ArtMuseumAPI/CopilotIndices/17.14.1518.61961/CodeChunks.db-wal
 .vs/ArtMuseumAPI/CopilotIndices/17.14.1518.61961/CodeChunks.db-shm
+ArtMuseumMigrationneo4js/obj/rider.project.restore.info
+ArtMuseumMigrationneo4js/obj/Debug/net9.0/ArtMuseumMigrationneo4js.AssemblyInfo.cs
+ArtMuseumMigrationneo4js/obj/Debug/net9.0/ArtMuseumMigrationneo4js.AssemblyInfoInputs.cache
