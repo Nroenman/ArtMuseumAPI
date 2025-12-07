@@ -23,6 +23,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
 
+//MongoDB Services
+builder.Services.AddScoped<IMongoService, MongoService>();
+builder.Services.AddScoped<IArtistsService, ArtistsService>();
+
 // --- DB: MySQL ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
