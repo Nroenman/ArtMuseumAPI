@@ -18,3 +18,6 @@ ArtMuseumAPI/bin/Debug/net9.0/ArtMuseumAPI.pdb
 ArtMuseumMigrationneo4js/obj/rider.project.restore.info
 ArtMuseumMigrationneo4js/obj/Debug/net9.0/ArtMuseumMigrationneo4js.AssemblyInfo.cs
 ArtMuseumMigrationneo4js/obj/Debug/net9.0/ArtMuseumMigrationneo4js.AssemblyInfoInputs.cache
+.vs
+.idea
+*.suo
