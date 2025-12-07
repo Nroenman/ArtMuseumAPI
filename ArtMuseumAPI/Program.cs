@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ArtMuseumAPI.Models;
-using ArtMuseumAPI.Models.Mongo;
-using ArtMuseumAPI.Models.Neo4j;
+//using ArtMuseumAPI.Models.Mongo;
+//using ArtMuseumAPI.Models.Neo4j;
 using ArtMuseumAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
 
-// === NEW: MongoDB DI ===
+/* // === NEW: MongoDB DI ===
 builder.Services.Configure<MongoSettings>(
     builder.Configuration.GetSection("MongoSettings"));
 
@@ -52,7 +52,7 @@ builder.Services.AddSingleton<IDriver>(sp =>
 {
     var cfg = sp.GetRequiredService<IOptions<Neo4JSettings>>().Value;
     return GraphDatabase.Driver(cfg.Uri, AuthTokens.Basic(cfg.User, cfg.Password));
-});
+}); */
 
 
 // --- CORS (allow all) ---
