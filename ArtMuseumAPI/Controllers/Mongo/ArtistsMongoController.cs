@@ -1,4 +1,5 @@
-﻿using ArtMuseumAPI.Models.Mongo;
+﻿using ArtMuseumAPI.DTO;
+using ArtMuseumAPI.Models.Mongo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -40,7 +41,7 @@ public class ArtistsMongoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] MongoArtist request)
+    public async Task<IActionResult> Create([FromBody] AddArtistRequest request)
     {
         if (request is null)
             return BadRequest("Request body is required.");
@@ -68,7 +69,7 @@ public class ArtistsMongoController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] MongoArtist request)
+    public async Task<IActionResult> Update(string id, [FromBody] AddArtistRequest request)
     {
         var update = Builders<MongoArtist>.Update
             .Set(a => a.FullName, request.FullName)
