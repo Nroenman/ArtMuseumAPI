@@ -14,7 +14,7 @@ public class CollectionsMongoController : ControllerBase
 {
     private readonly IMongoCollection<MongoCollection> _collections;
 
-    public CollectionsMongoController(IMongoClient client, IOptions<MongoSettings> mongoOptions)
+    public CollectionsMongoController(IMongoClient client, IOptions<MongoSettings> mongoOptions) //fix
     {
         var db = client.GetDatabase(mongoOptions.Value.DatabaseName);
         _collections = db.GetCollection<MongoCollection>("Collections");
@@ -34,7 +34,7 @@ public class CollectionsMongoController : ControllerBase
         return Ok(new
         {
             collection.Id,
-            collection.OwnerId,
+            collection.OwnerID,
             collection.Name,
             collection.Description
         });
@@ -57,7 +57,7 @@ public class CollectionsMongoController : ControllerBase
         {
             Name = request.Name,
             Description = request.Description,
-            OwnerId = request.Owner
+            OwnerID = request.Owner
         };
 
         await _collections.InsertOneAsync(doc);
@@ -65,7 +65,7 @@ public class CollectionsMongoController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = doc.Id }, new
         {
             doc.Id,
-            doc.OwnerId,
+            doc.OwnerID,
             doc.Name,
             doc.Description
         });
@@ -73,9 +73,9 @@ public class CollectionsMongoController : ControllerBase
 
     // PUT: api/mongo/Collections/{id}/owner/{ownerId}
     [HttpPut("{id}/owner/{ownerId:int}")]
-    public async Task<IActionResult> UpdateOwner(string id, int ownerId)
+    public async Task<IActionResult> UpdateOwner(string id, int OwnerID)
     {
-        var update = Builders<MongoCollection>.Update.Set(c => c.OwnerId, ownerId);
+        var update = Builders<MongoCollection>.Update.Set(c => c.OwnerID, OwnerID);
 
         var result = await _collections.UpdateOneAsync(c => c.Id == id, update);
 
@@ -87,7 +87,7 @@ public class CollectionsMongoController : ControllerBase
         return Ok(new
         {
             updated!.Id,
-            updated.OwnerId,
+            updated.OwnerID,
             updated.Name,
             updated.Description
         });
