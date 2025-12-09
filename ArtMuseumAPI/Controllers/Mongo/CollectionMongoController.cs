@@ -8,24 +8,28 @@ using MongoDB.Driver;
 namespace ArtMuseumAPI.Controllers.Mongo;
 
 [ApiController]
-[Route("api/mongo/[controller]")]
+// Explicit route so it matches exactly what Swagger calls
+[Route("api/mongo/CollectionsMongo")]
 [ApiExplorerSettings(GroupName = "Mongo")]
 public class CollectionsMongoController : ControllerBase
 {
     private readonly IMongoCollection<MongoCollection> _collections;
 
-    public CollectionsMongoController(IMongoClient client, IOptions<MongoSettings> mongoOptions) //fix
+    public CollectionsMongoController(IMongoClient client, IOptions<MongoSettings> mongoOptions)
     {
         var db = client.GetDatabase(mongoOptions.Value.DatabaseName);
         _collections = db.GetCollection<MongoCollection>("Collections");
     }
 
-    // GET: api/mongo/Collections/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    // ------------------------------------------------------------
+    // GET: api/mongo/CollectionsMongo/{collectionId}
+    // Look up by numeric CollectionID (NOT Mongo ObjectId)
+    // ------------------------------------------------------------
+    [HttpGet("{collectionId:int}")]
+    public async Task<IActionResult> GetByCollectionId(int collectionId)
     {
         var collection = await _collections
-            .Find(c => c.Id == id)
+            .Find(c => c.CollectionID == collectionId)
             .FirstOrDefaultAsync();
 
         if (collection == null)
@@ -33,14 +37,17 @@ public class CollectionsMongoController : ControllerBase
 
         return Ok(new
         {
-            collection.Id,
+            collection.CollectionID,
             collection.OwnerID,
             collection.Name,
             collection.Description
         });
     }
 
-    // POST: api/mongo/Collections
+    // ------------------------------------------------------------
+    // POST: api/mongo/CollectionsMongo
+    // Creates a new collection and auto-assigns CollectionID
+    // ------------------------------------------------------------
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AddCollectionRequest request)
     {
@@ -51,10 +58,14 @@ public class CollectionsMongoController : ControllerBase
             return BadRequest("Name is required.");
 
         if (request.Name.Length > 255)
-            return BadRequest("Name is too long. It must be less than 255 characters long.");
+            return BadRequest("Name is too long (max 255 characters).");
+
+        // Simple "next ID" based on count – good enough for demo
+        var nextId = (int)(await _collections.CountDocumentsAsync(_ => true)) + 1;
 
         var doc = new MongoCollection
         {
+            CollectionID = nextId,
             Name = request.Name,
             Description = request.Description,
             OwnerID = request.Owner
@@ -62,47 +73,77 @@ public class CollectionsMongoController : ControllerBase
 
         await _collections.InsertOneAsync(doc);
 
-        return CreatedAtAction(nameof(GetById), new { id = doc.Id }, new
-        {
-            doc.Id,
-            doc.OwnerID,
-            doc.Name,
-            doc.Description
-        });
+        return CreatedAtAction(
+            nameof(GetByCollectionId),
+            new { collectionId = doc.CollectionID },
+            new
+            {
+                doc.CollectionID,
+                doc.OwnerID,
+                doc.Name,
+                doc.Description
+            });
     }
 
-    // PUT: api/mongo/Collections/{id}/owner/{ownerId}
-    [HttpPut("{id}/owner/{ownerId:int}")]
-    public async Task<IActionResult> UpdateOwner(string id, int OwnerID)
+    // ------------------------------------------------------------
+    // PUT: api/mongo/CollectionsMongo/{collectionId}/owner/{ownerId}
+    // Update owner using numeric CollectionID
+    // ------------------------------------------------------------
+    [HttpPut("{collectionId:int}/owner/{ownerId:int}")]
+    public async Task<IActionResult> UpdateOwner(int collectionId, int ownerId)
     {
-        var update = Builders<MongoCollection>.Update.Set(c => c.OwnerID, OwnerID);
+        var update = Builders<MongoCollection>.Update.Set(c => c.OwnerID, ownerId);
 
-        var result = await _collections.UpdateOneAsync(c => c.Id == id, update);
+        var result = await _collections.UpdateOneAsync(
+            c => c.CollectionID == collectionId,
+            update
+        );
 
         if (result.MatchedCount == 0)
             return NotFound();
 
-        var updated = await _collections.Find(c => c.Id == id).FirstOrDefaultAsync();
+        var updated = await _collections
+            .Find(c => c.CollectionID == collectionId)
+            .FirstOrDefaultAsync();
 
         return Ok(new
         {
-            updated!.Id,
+            updated!.CollectionID,
             updated.OwnerID,
             updated.Name,
             updated.Description
         });
     }
 
-    // DELETE: api/mongo/Collections/{id}
+    // ------------------------------------------------------------
+    // DELETE: api/mongo/CollectionsMongo/{collectionId}
+    // ------------------------------------------------------------
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    [HttpDelete("{collectionId:int}")]
+    public async Task<IActionResult> Delete(int collectionId)
     {
-        var result = await _collections.DeleteOneAsync(c => c.Id == id);
+        var result = await _collections.DeleteOneAsync(c => c.CollectionID == collectionId);
 
         if (result.DeletedCount == 0)
             return NotFound();
 
         return NoContent();
     }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var docs = await _collections
+            .Find(Builders<MongoCollection>.Filter.Empty)
+            .ToListAsync();
+
+        return Ok(docs.Select(c => new
+        {
+            c.Id,           // Mongo ObjectId
+            c.CollectionID, // our numeric id
+            c.OwnerID,
+            c.Name,
+            c.Description
+        }));
+    }
+
 }
