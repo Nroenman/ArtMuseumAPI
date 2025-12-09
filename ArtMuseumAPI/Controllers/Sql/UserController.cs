@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArtMuseumAPI.Controllers;
+namespace ArtMuseumAPI.Controllers.Sql;
 
 [Route("api/[controller]")]
 [ApiController]

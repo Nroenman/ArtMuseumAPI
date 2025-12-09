@@ -6,7 +6,7 @@ using ArtMuseumAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ArtMuseumAPI.Controllers;
+namespace ArtMuseumAPI.Controllers.Sql;
 
 [Route("api/[controller]")]
 [ApiController]
