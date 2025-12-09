@@ -20,24 +20,25 @@ public class ArtistsMongoController : ControllerBase
         _artists = database.GetCollection<MongoArtist>("Artists");
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    [HttpGet("by-artistid/{artistId:int}")]
+    public async Task<IActionResult> GetByArtistId(int artistId)
     {
-        var artist = await _artists.Find(a => a.Id == id).FirstOrDefaultAsync();
-        if (artist == null)
-        {
-            return NotFound();
-        }
+        var filter = Builders<MongoArtist>.Filter.Eq(a => a.ArtistID, artistId);
+        var results = await _artists.Find(filter).ToListAsync();
 
-        return Ok(new
+        if (results == null || results.Count == 0)
+            return NotFound();
+
+        return Ok(results.Select(a => new
         {
-            artist.Id,
-            artist.FullName,
-            artist.Nationality,
-            artist.BirthDate,
-            artist.DeathDate,
-            artist.Biography
-        });
+            a.Id,
+            a.ArtistID,
+            a.FullName,
+            a.Nationality,
+            a.BirthDate,
+            a.DeathDate,
+            a.Biography
+        }));
     }
 
     [HttpPost]
@@ -45,7 +46,7 @@ public class ArtistsMongoController : ControllerBase
     {
         if (request is null)
             return BadRequest("Request body is required.");
-        
+
         if (string.IsNullOrWhiteSpace(request.FullName))
             return BadRequest("FullName is required.");
 
@@ -58,8 +59,11 @@ public class ArtistsMongoController : ControllerBase
             Biography = request.Biography
         };
         await _artists.InsertOneAsync(doc);
-        return CreatedAtAction(nameof(GetById), new { id = doc.Id }, new
+    
+        return Ok(new
         {
+            doc.Id,
+            doc.ArtistID,
             doc.FullName,
             doc.Nationality,
             doc.BirthDate,
@@ -67,6 +71,7 @@ public class ArtistsMongoController : ControllerBase
             doc.Biography
         });
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] AddArtistRequest request)
