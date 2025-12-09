@@ -1,14 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using ArtMuseumAPI.Models;
 using ArtMuseumAPI.Models.Mongo;
 using ArtMuseumAPI.Models.Neo4j;
 using ArtMuseumAPI.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Neo4j.Driver;
@@ -62,29 +57,6 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader());
 });
 
-// --- JWT Auth (VALIDATED, matches AuthController) ---
-var signingKeyBytes = Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidateLifetime = true,
-
-            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-            ValidAudience = builder.Configuration["AppSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
-
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = JwtRegisteredClaimNames.Sub,
-            ClockSkew = TimeSpan.FromMinutes(2)
-        };
-    });
-
 // --- Swagger ---
 builder.Services.AddSwaggerGen(options =>
 {
@@ -104,23 +76,6 @@ builder.Services.AddSwaggerGen(options =>
 
     options.DocInclusionPredicate((docName, apiDesc) => true);
     options.AddServer(new OpenApiServer { Url = "http://localhost:5133" });
-
-    var scheme = new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "Paste your JWT (no 'Bearer ' prefix)."
-    };
-    options.AddSecurityDefinition("Bearer", scheme);
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecurityScheme
-        { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }
-        ] = Array.Empty<string>()
-    });
 });
 
 var app = builder.Build();
@@ -136,9 +91,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

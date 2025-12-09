@@ -95,7 +95,6 @@ public class ArtistsMongoController : ControllerBase
         });
     }
     
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
