@@ -45,15 +45,25 @@ public class CollectionsService(ApplicationDbContext db) : ICollectionsService
 
     public async Task<bool> DeleteCollectionAsync(int id)
     {
-        var exists = await _db.Collections
-            .AnyAsync(c => c.CollectionId == id);
+        await using var tx = await _db.Database.BeginTransactionAsync();
 
-        if (!exists)
-            return false;
+        try
+        {
+            var exists = await _db.Collections
+                .AnyAsync(c => c.CollectionId == id);
 
-        // Keep your stored procedure
-        await _db.Database.ExecuteSqlRawAsync("CALL delete_collection({0})", id);
+            if (!exists)
+                return false; 
+            
+            await _db.Database.ExecuteSqlRawAsync("CALL delete_collection({0})", id);
 
-        return true;
+            await tx.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
     }
 }
