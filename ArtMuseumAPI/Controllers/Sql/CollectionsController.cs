@@ -1,57 +1,44 @@
 ﻿using ArtMuseumAPI.DTO;
-using ArtMuseumAPI.Models;
+using ArtMuseumAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ArtMuseumAPI.Controllers.Sql
 {
     [ApiController]
     [Route("api/mysql/[controller]")]
     [ApiExplorerSettings(GroupName = "MySql")]
-    public class CollectionsController : ControllerBase
+    public class CollectionsController(ICollectionsService collectionsService) : ControllerBase
     {
-
-        private readonly ApplicationDbContext _db;
-
-        public CollectionsController(ApplicationDbContext db)
-        {
-            _db = db;
-        }
-
-
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult<IEnumerable<object>>> DeleteController(int id)
+        public async Task<IActionResult> DeleteController(int id)
         {
-
-            var exists = await _db.Collections.AnyAsync(c => c.CollectionId == id);
-            if (!exists)
+            var deleted = await collectionsService.DeleteCollectionAsync(id);
+            if (!deleted)
                 return NotFound();
 
-            await _db.Database.ExecuteSqlRawAsync("CALL delete_collection({0})", id);
-
-
-            return NoContent();
+            return Ok(new
+            {
+                message = "Collection deleted",
+                collectionId = id
+            });
         }
-
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetCollectionId(int id)
         {
-            var collection = await _db.Collections
-                .Where(c => c.CollectionId == id)
-                .Select(c => new
-                {
-                    c.CollectionId,
-                    c.OwnerId,
-                    c.Name,
-                    c.Description
+            var collection = await collectionsService.GetCollectionAsync(id);
+            if (collection is null)
+                return NotFound();
 
-                })
-                .FirstOrDefaultAsync();
-
-            return collection is null ? NotFound() : Ok(collection);
+            return Ok(new
+            {
+                collection.CollectionId,
+                collection.OwnerId,
+                collection.Name,
+                collection.Description
+            });
         }
 
         [HttpPost]
@@ -60,20 +47,10 @@ namespace ArtMuseumAPI.Controllers.Sql
             if (request is null)
                 return BadRequest("Request body is required.");
 
-            if (request.Name.Length >255)
+            if (request.Name.Length > 255)
                 return BadRequest("Name is too long. It must be less than 255 characters long");
 
-
-            var collection = new Collection
-            {
-                Name = request.Name,
-                Description = request.Description,
-                OwnerId = request.Owner
-            };
-
-            _db.Collections.Add(collection);
-
-            await _db.SaveChangesAsync();
+            var collection = await collectionsService.CreateCollectionAsync(request);
 
             return CreatedAtAction(nameof(GetCollectionId), new { id = collection.CollectionId }, new
             {
@@ -85,21 +62,13 @@ namespace ArtMuseumAPI.Controllers.Sql
         }
 
         [HttpPut("{id:int}/{ownerId:int}")]
-        public async Task<IActionResult> UpdateOwnerOnCollection(int id,int ownerId)
+        public async Task<IActionResult> UpdateOwnerOnCollection(int id, int ownerId)
         {
-            var collection = await _db.Collections
-                    .FirstOrDefaultAsync(c => c.CollectionId == id);
-
-            if (collection == null)
-            {
+            var updated = await collectionsService.UpdateOwnerAsync(id, ownerId);
+            if (!updated)
                 return NotFound();
-            }
 
-            collection.OwnerId = ownerId;
-
-            await _db.SaveChangesAsync();
-
-            return Ok(collection);
+            return Ok(new { CollectionId = id, OwnerId = ownerId });
         }
     }
 }

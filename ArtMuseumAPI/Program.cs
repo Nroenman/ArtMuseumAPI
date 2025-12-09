@@ -22,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICollectionsService , CollectionsService>();
+
 
 // --- DB: MySQL ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
