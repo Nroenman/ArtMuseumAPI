@@ -11,7 +11,6 @@ namespace ArtMuseumAPI.Controllers.Neo4J;
 [ApiExplorerSettings(GroupName = "Neo4j")]
 public class CollectionsNeo4JController(IDriver driver) : ControllerBase
 {
-    // GET: api/neo4j/CollectionsNeo4J/2
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -38,8 +37,7 @@ public class CollectionsNeo4JController(IDriver driver) : ControllerBase
             Description  = record["Description"].As<string?>()
         });
     }
-
-    // GET: api/neo4j/CollectionsNeo4J  (small sample)
+    
     [HttpGet]
     public async Task<IActionResult> GetSample()
     {
@@ -64,9 +62,7 @@ public class CollectionsNeo4JController(IDriver driver) : ControllerBase
 
         return Ok(list);
     }
-
-    // POST: api/neo4j/CollectionsNeo4J
-    // Creates a new Collection with an auto-incremented collectionId
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AddCollectionRequest request)
     {
@@ -116,8 +112,6 @@ public class CollectionsNeo4JController(IDriver driver) : ControllerBase
         });
     }
 
-    // PUT: api/neo4j/CollectionsNeo4J/2/owner/5
-    // (Adds/updates an ownerId property on the Collection node)
     [HttpPut("{id:int}/owner/{ownerId:int}")]
     public async Task<IActionResult> UpdateOwner(int id, int ownerId)
     {
@@ -147,8 +141,7 @@ public class CollectionsNeo4JController(IDriver driver) : ControllerBase
             Description  = record["Description"].As<string?>()
         });
     }
-
-    // DELETE: api/neo4j/CollectionsNeo4J/2
+    
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)

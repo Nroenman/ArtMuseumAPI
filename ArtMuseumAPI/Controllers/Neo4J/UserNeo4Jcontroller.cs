@@ -11,7 +11,6 @@ namespace ArtMuseumAPI.Controllers.Neo4J;
 [ApiExplorerSettings(GroupName = "Neo4j")]
 public class UsersNeo4JController(IDriver driver) : ControllerBase
 {
-    // GET: api/neo4j/UsersNeo4J  (Admin only)
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetAllUsers()
@@ -43,8 +42,7 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
 
         return Ok(users);
     }
-
-    // POST: api/neo4j/UsersNeo4J/register
+    
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
@@ -58,8 +56,7 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
         var email = request.Email.Trim().ToLowerInvariant();
 
         await using var session = driver.AsyncSession();
-
-        // 1) check if email already exists
+        
         var existsCursor = await session.RunAsync(
             @"MATCH (u:User { email: $email })
               RETURN count(u) AS Cnt",
@@ -68,8 +65,7 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
         var existsCount = (await existsCursor.SingleAsync())["Cnt"].As<long>();
         if (existsCount > 0)
             return Conflict("User already exists.");
-
-        // 2) compute next userId
+        
         var nextIdCursor = await session.RunAsync(
             @"MATCH (u:User)
               RETURN coalesce(max(u.userId), 0) + 1 AS NextId");
@@ -82,11 +78,9 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
         var userName = string.IsNullOrWhiteSpace(request.UserName)
             ? email.Split('@')[0]
             : request.UserName!.Trim();
-
-        // default role, like MySQL ("user")
+        
         const string defaultRoles = "user";
-
-        // 3) create node
+        
         var createCursor = await session.RunAsync(
             @"CREATE (u:User {
                     userId:       $userId,
@@ -127,8 +121,7 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
             UpdatedAt = record["UpdatedAt"].As<string>()
         });
     }
-
-    // GET: api/neo4j/UsersNeo4J/{id}
+    
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
@@ -162,9 +155,7 @@ public class UsersNeo4JController(IDriver driver) : ControllerBase
             UpdatedAt = record["UpdatedAt"].As<string?>()
         });
     }
-
-    // PUT: api/neo4j/UsersNeo4J/{id}/roles
-    // Allow changing roles (e.g. "Admin", "Admin,user", etc.)
+    
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}/roles")]
     public async Task<IActionResult> UpdateRoles(int id, [FromBody] string roles)

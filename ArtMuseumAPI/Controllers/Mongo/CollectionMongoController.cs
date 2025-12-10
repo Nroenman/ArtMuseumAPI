@@ -102,9 +102,7 @@ public class CollectionsMongoController : ControllerBase
             updated.Description
         });
     }
-
     
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{collectionId:int}")]
     public async Task<IActionResult> Delete(int collectionId)
     {
@@ -115,6 +113,7 @@ public class CollectionsMongoController : ControllerBase
 
         return NoContent();
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

@@ -71,8 +71,7 @@ public class ArtistsMongoController : ControllerBase
             doc.Biography
         });
     }
-
-
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] AddArtistRequest request)
     {

@@ -19,14 +19,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICollectionsService , CollectionsService>();
 
-
-// --- DB: MySQL ---
+//MySQL
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-
-// === NEW: MongoDB DI ===
+//MongoDB
 builder.Services.Configure<MongoSettings>(
     builder.Configuration.GetSection("MongoSettings"));
 
@@ -36,8 +34,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     return new MongoClient(settings.ConnectionString);
 });
 
-
-// === NEW: Neo4j DI ===
+//Neo4j
 builder.Services.Configure<Neo4JSettings>(
     builder.Configuration.GetSection("Neo4jSettings"));
 
@@ -47,8 +44,6 @@ builder.Services.AddSingleton<IDriver>(sp =>
     return GraphDatabase.Driver(cfg.Uri, AuthTokens.Basic(cfg.User, cfg.Password));
 });
 
-
-// --- CORS (allow all) ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p => p
@@ -57,7 +52,6 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader());
 });
 
-// --- Swagger ---
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
