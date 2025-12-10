@@ -19,7 +19,6 @@ public class AuthController(IUserService userService, IConfiguration configurati
         if (user == null)
             return Unauthorized(new { Message = "Incorrect email or password." });
 
-        // roles: "Admin,User" etc.
         var roles = (user.Roles ?? "")
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 

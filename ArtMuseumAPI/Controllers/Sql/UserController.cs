@@ -17,7 +17,7 @@ public class UsersController : ControllerBase
         _db = db;
     }
 
-    // GET: api/Users (Admin only) — adjust/remove Roles if not present on User
+    
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetAllUsers()
@@ -36,7 +36,6 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    // POST: api/Users/register
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
@@ -79,7 +78,6 @@ public class UsersController : ControllerBase
         });
     }
 
-    // GET: api/Users/{id}
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)

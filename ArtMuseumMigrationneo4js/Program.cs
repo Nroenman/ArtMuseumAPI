@@ -16,7 +16,6 @@ internal class Program
         {
             Console.WriteLine("Starting migration...");
 
-            // --- Load configuration + secrets ---
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
@@ -40,14 +39,12 @@ internal class Program
 
             Console.WriteLine($"Neo4j URI (debug): {neo4JUri}");
 
-            // --- Test MySQL connection once ---
             await using (var testConn = new MySqlConnection(mysqlConn))
             {
                 await testConn.OpenAsync();
                 Console.WriteLine("MySQL connected.");
             }
 
-            // --- Neo4j connection ---
             await using var driver = GraphDatabase.Driver(
                 neo4JUri,
                 AuthTokens.Basic(neo4JUser, neo4JPass)
@@ -60,10 +57,8 @@ internal class Program
             await using var session = driver.AsyncSession(o => o.WithDatabase("neo4j"));
             Console.WriteLine("Neo4j session opened.");
 
-            // 1) Constraints (run once, safe to re-run)
             await CreateConstraints(session);
 
-            // 2) Migrate NODE tables first (each gets its own MySQL connection)
             await MigrateArtists(mysqlConn, session);
             await MigrateLocations(mysqlConn, session);
             await MigrateOwners(mysqlConn, session);
@@ -75,7 +70,6 @@ internal class Program
             await MigrateRestorationNodes(mysqlConn, session);
             await MigrateTransactionNodes(mysqlConn, session);
 
-            // 3) Then migrate RELATIONSHIPS (FKs + join tables)
             await LinkArtworksToArtists(mysqlConn, session);
             await LinkArtworksToLocations(mysqlConn, session);
             await LinkArtworksToOwners(mysqlConn, session);
@@ -95,9 +89,7 @@ internal class Program
         }
     }
 
-    // =========================
-    // Constraints
-    // =========================
+    
     private static async Task CreateConstraints(IAsyncSession session)
     {
         var commands = new[]
@@ -122,9 +114,7 @@ internal class Program
         Console.WriteLine("Constraints created.");
     }
 
-    // =========================
-    // Node migrations
-    // =========================
+ 
 
     private static async Task MigrateArtists(string connStr, IAsyncSession session)
     {
@@ -681,9 +671,7 @@ internal class Program
         Console.WriteLine($"Transaction nodes migrated: {count}");
     }
 
-    // =========================
-    // Relationship migrations
-    // =========================
+  
 
     private static async Task LinkArtworksToArtists(string connStr, IAsyncSession session)
     {
@@ -1036,7 +1024,6 @@ internal class Program
 
     private static async Task LinkTransactions(string connStr, IAsyncSession session)
     {
-        // link Transaction nodes to Artwork + Owners
         const string sql = @"
             SELECT transaction_id, artwork_id, from_owner_id, to_owner_id
             FROM transactions";
@@ -1073,7 +1060,6 @@ internal class Program
 
             await session.RunAsync(cypherArt, pArt);
 
-            // optional from_owner
             if (!reader.IsDBNull(colFrom))
             {
                 countFrom++;
@@ -1088,7 +1074,6 @@ internal class Program
                 await session.RunAsync(cypherFrom, pFrom);
             }
 
-            // optional to_owner
             if (!reader.IsDBNull(colTo))
             {
                 countTo++;

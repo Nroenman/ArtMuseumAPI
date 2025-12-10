@@ -4,12 +4,11 @@ namespace ArtMuseumAPI.Models;
 
 public class User
 {
-    // EF can set this when inserting a row
     public int UserId { get; set; }
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
 
-    [JsonIgnore] // avoid leaking hashes in API responses/logs
+    [JsonIgnore] 
     public string PasswordHash { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }

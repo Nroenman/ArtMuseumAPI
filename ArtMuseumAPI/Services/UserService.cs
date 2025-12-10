@@ -7,7 +7,6 @@ namespace ArtMuseumAPI.Services
 {
     public class UserService(ApplicationDbContext db, IDriver neo4J) : IUserService
     {
-        // Used by AuthController for login
         public User? Authenticate(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
@@ -15,18 +14,16 @@ namespace ArtMuseumAPI.Services
 
             var normalizedEmail = email.Trim().ToLowerInvariant();
 
-            // 1) Try MySQL first
             var sqlUser = db.Users
                 .AsNoTracking()
                 .SingleOrDefault(u => u.Email == normalizedEmail);
 
             if (sqlUser != null && BCrypt.Net.BCrypt.Verify(password, sqlUser.PasswordHash))
             {
-                return sqlUser; // has Roles from MySQL
+                return sqlUser;
             }
 
-            // 2) Fallback to Neo4j
-            using var session = neo4J.AsyncSession(); // ✅ AsyncSession, not Session
+            using var session = neo4J.AsyncSession();
 
             var cursor = session
                 .RunAsync(
@@ -53,7 +50,6 @@ namespace ArtMuseumAPI.Services
             var roles = record["Roles"].As<string?>();
             var userId = record["UserId"].As<int>();
 
-            // Map Neo4j result into a User entity so AuthController can use it
             var neoUser = new User
             {
                 UserId       = userId,
@@ -61,14 +57,11 @@ namespace ArtMuseumAPI.Services
                 Email        = record["Email"].As<string>(),
                 PasswordHash = passwordHash,
                 Roles        = roles ?? string.Empty,
-                // CreatedAt/UpdatedAt not strictly needed for auth
             };
 
             return neoUser;
         }
 
-        // Interface member from IUserService
-        // Your tests expect this to THROW UnauthorizedAccessException on bad token.
         public User GetUserFromJwtToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -89,12 +82,10 @@ namespace ArtMuseumAPI.Services
             if (!int.TryParse(sub, out var userId))
                 throw new UnauthorizedAccessException("Invalid token");
 
-            // 1) Try MySQL
             var sqlUser = db.Users.AsNoTracking().SingleOrDefault(u => u.UserId == userId);
             if (sqlUser != null)
                 return sqlUser;
 
-            // 2) Fallback to Neo4j
             using var session = neo4J.AsyncSession();
 
             var cursor = session

@@ -8,7 +8,6 @@ using MongoDB.Driver;
 namespace ArtMuseumAPI.Controllers.Mongo;
 
 [ApiController]
-// Explicit route so it matches exactly what Swagger calls
 [Route("api/mongo/CollectionsMongo")]
 [ApiExplorerSettings(GroupName = "Mongo")]
 public class CollectionsMongoController : ControllerBase
@@ -21,10 +20,8 @@ public class CollectionsMongoController : ControllerBase
         _collections = db.GetCollection<MongoCollection>("Collections");
     }
 
-    // ------------------------------------------------------------
     // GET: api/mongo/CollectionsMongo/{collectionId}
-    // Look up by numeric CollectionID (NOT Mongo ObjectId)
-    // ------------------------------------------------------------
+   
     [HttpGet("{collectionId:int}")]
     public async Task<IActionResult> GetByCollectionId(int collectionId)
     {
@@ -44,10 +41,6 @@ public class CollectionsMongoController : ControllerBase
         });
     }
 
-    // ------------------------------------------------------------
-    // POST: api/mongo/CollectionsMongo
-    // Creates a new collection and auto-assigns CollectionID
-    // ------------------------------------------------------------
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AddCollectionRequest request)
     {
@@ -60,7 +53,6 @@ public class CollectionsMongoController : ControllerBase
         if (request.Name.Length > 255)
             return BadRequest("Name is too long (max 255 characters).");
 
-        // Simple "next ID" based on count – good enough for demo
         var nextId = (int)(await _collections.CountDocumentsAsync(_ => true)) + 1;
 
         var doc = new MongoCollection
@@ -85,10 +77,6 @@ public class CollectionsMongoController : ControllerBase
             });
     }
 
-    // ------------------------------------------------------------
-    // PUT: api/mongo/CollectionsMongo/{collectionId}/owner/{ownerId}
-    // Update owner using numeric CollectionID
-    // ------------------------------------------------------------
     [HttpPut("{collectionId:int}/owner/{ownerId:int}")]
     public async Task<IActionResult> UpdateOwner(int collectionId, int ownerId)
     {
@@ -115,9 +103,7 @@ public class CollectionsMongoController : ControllerBase
         });
     }
 
-    // ------------------------------------------------------------
-    // DELETE: api/mongo/CollectionsMongo/{collectionId}
-    // ------------------------------------------------------------
+    
     [Authorize(Roles = "Admin")]
     [HttpDelete("{collectionId:int}")]
     public async Task<IActionResult> Delete(int collectionId)
