@@ -1,14 +1,18 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ArtMuseumAPI.Models;
 using ArtMuseumAPI.Models.Mongo;
 using ArtMuseumAPI.Models.Neo4j;
 using ArtMuseumAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Neo4j.Driver;
 using ServerVersion = Microsoft.EntityFrameworkCore.ServerVersion;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,14 +21,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICollectionsService , CollectionsService>();
+builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 
-//MySQL
+// MySQL
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-//MongoDB
+// MongoDB
 builder.Services.Configure<MongoSettings>(
     builder.Configuration.GetSection("MongoSettings"));
 
@@ -34,7 +38,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     return new MongoClient(settings.ConnectionString);
 });
 
-//Neo4j
+// Neo4j
 builder.Services.Configure<Neo4JSettings>(
     builder.Configuration.GetSection("Neo4jSettings"));
 
@@ -44,6 +48,7 @@ builder.Services.AddSingleton<IDriver>(sp =>
     return GraphDatabase.Driver(cfg.Uri, AuthTokens.Basic(cfg.User, cfg.Password));
 });
 
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p => p
@@ -52,6 +57,34 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader());
 });
 
+
+// --- JWT Auth (matches AuthController) ---
+var signingKeyBytes = Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+
+            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+            ValidAudience = builder.Configuration["AppSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = JwtRegisteredClaimNames.Sub,
+            ClockSkew = TimeSpan.FromMinutes(2)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+
+// --- Swagger ---
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -60,16 +93,34 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    options.TagActionsBy(api =>
+    options.DocInclusionPredicate((docName, apiDesc) => docName == "v1");
+    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+    // Bearer button in Swagger UI
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        return new[]
-        {
-            api.GroupName ?? api.ActionDescriptor.RouteValues["controller"]!
-        };
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Paste your JWT (no 'Bearer ' prefix)."
     });
 
-    options.DocInclusionPredicate((docName, apiDesc) => true);
-    options.AddServer(new OpenApiServer { Url = "http://localhost:5133" });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 var app = builder.Build();
@@ -84,7 +135,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// ✅ Correct middleware order
 app.UseCors("AllowAll");
-app.MapControllers();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 app.Run();
